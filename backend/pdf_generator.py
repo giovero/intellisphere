@@ -9,10 +9,10 @@ class pdfGenerator(object):
     def __init__(self, pdf_name, pdf_content):
         self.pdf_name = pdf_name
         self.pdf_content = pdf_content
-        pdf_folder = os.path.join(os.getcwd(), 'pdf_result')
-        if not os.path.exists(pdf_folder):
-            os.makedirs(pdf_folder, mode=0o777)
-        self.pdf_path = os.path.join(pdf_folder, self.pdf_name)
+        self.pdf_folder = os.path.join(os.getcwd(), 'pdf_result')
+        if not os.path.exists(self.pdf_folder):
+            os.makedirs(self.pdf_folder, mode=0o777)
+        self.pdf_path = os.path.join(self.pdf_folder, self.pdf_name)
     
     def generate_pdf(self, x_pos=20, y_pos=20):
         doc = SimpleDocTemplate(self.pdf_path, pagesize=letter)
@@ -28,3 +28,16 @@ class pdfGenerator(object):
 
         return self.pdf_path
 
+    def pdf_merge(self, pdf_to_merge):
+        pdf_merger = PyPDF2.PdfFileMerger()
+        for pdf_file in pdf_to_merge:
+            pdf_merger.append(pdf_file)
+
+        # Specify the output file where the merged PDF will be saved
+        output_pdf = os.path.join(self.pdf_folder, 'merged.pdf')
+    
+        # Write the merged PDF to the output file
+        pdf_merger.write(output_pdf)
+        return output_pdf
+
+    

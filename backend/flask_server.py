@@ -39,13 +39,20 @@ def is_alive():
 @app.route('/search_text', methods=['GET'])
 def search_text():
     all_text = request.args.get('all_text')
+    alunno_id = request.args.get('alunno_id')
+    merge = request.args.get('merge')
     if not all_text:
         return jsonify({'error': 'Missing parameters'}), 400
     SESSION_ID = login_chat_gpt()
     
     out = {}
     
-    alunni = DB_MANAGER.getAlunni()
+    if alunno_id:
+        alunni = DB_MANAGER.getAunnoById(int(alunno_id))
+    else:
+        alunni = DB_MANAGER.getAlunni()
+    
+    all_pdf = []
     for alunno in alunni:
         result = submitChatGPT(SESSION_ID, all_text + alunno.additional_req)
         
@@ -53,27 +60,13 @@ def search_text():
         out[alunno.id]['txt_res'] = "%s\n\n" % (alunno.name.capitalize()) + result
         new_pdf = pdfGenerator('%s.pdf' % (alunno.name), out[alunno.id]['txt_res'])
         out[alunno.id]['pdf_res'] = new_pdf.generate_pdf()
-    return jsonify({'result': result})
-
-@app.route('/search_text_single', methods=['GET'])
-def search_text_single():
-    all_text = request.args.get('all_text')
-    alunno_id = request.args.get('alunno_id')
-    if not all_text or not alunno_id:
-        return jsonify({'error': 'Missing parameters'}), 400
-    alunno_id = int(alunno_id)
-    SESSION_ID = login_chat_gpt()
-    
-    out = {}
-    
-    alunni = DB_MANAGER.getAunnoById(alunno_id)
-    for alunno in alunni:
-        result = submitChatGPT(SESSION_ID, all_text + alunno.additional_req)
+        all_pdf.append(out[alunno.id]['pdf_res'])
         
-        out.setdefault(alunno.id, {})
-        out[alunno.id]['txt_res'] = "%s\n\n" % (alunno.name.capitalize()) + result
-        new_pdf = pdfGenerator('%s.pdf' % (alunno.name), out[alunno.id]['txt_res'])
-        out[alunno.id]['pdf_res'] = new_pdf.generate_pdf()
+    if merge:
+        new_pdf = pdfGenerator('merged.pdf', out[alunno.id]['txt_res'])
+        out.setdefault('all', {'txt_res': '',
+                               'pdf_res': new_pdf.pdf_merge(all_pdf)
+                               })
     return jsonify({'result': result})
 
 
@@ -92,7 +85,7 @@ def login_chat_gpt():
     
     if response.status_code == 200:
         SESSION_ID = json.loads(response.text).get('sessionID')
-        print('Response:', response.text)
+        #print('Response:', response.text)
     else:
         print('Request failed with status code:', response.status_code)
     return SESSION_ID
