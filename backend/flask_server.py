@@ -3,13 +3,13 @@ Created on Aug 21, 2023
 
 @author: daniel
 '''
-from flask import Flask, request, jsonify
-from bs4 import BeautifulSoup
+from flask import Flask, request, jsonify, send_file
 from db_manager import DbManager
 from pdf_generator import pdfGenerator
 import requests
 import os
 import json
+from flask_cors import CORS
 
 SECRET = ''
 
@@ -23,6 +23,8 @@ with open(secret_file) as config_file:
 
 
 app = Flask(__name__)
+CORS(app)
+
 
 DB_MANAGER = DbManager()
 #DB_MANAGER.addAlunno({'name': 'Giorgio', 'age': 30, 'additional_req': ' con solo moltiplicazioni'})
@@ -69,7 +71,12 @@ def search_text():
                                })
     return jsonify({'result': result})
 
-
+@app.route('/download')
+def download_file():
+    # Specifica il percorso del file che vuoi far scaricare agli utenti
+    file_path = 'pdf_result/Luca.pdf'
+    # Restituisci il file al browser come download
+    return send_file(file_path, as_attachment=True)
 
 def login_chat_gpt():
     url = 'https://backend.memori.ai/memori/v2/session'
