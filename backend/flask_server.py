@@ -110,7 +110,7 @@ def submitChatGPT(session_id, question):
     response = requests.post(url, data=json.dumps(data), headers=headers)
     if response.status_code == 200:
         emission = json.loads(response.text).get('currentState', {}).get('emission')
-        print('Response:', response.text)
+        #print('Response:', response.text)
     else:
         print('Request failed with status code:', response.status_code)
     return emission

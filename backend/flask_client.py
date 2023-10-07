@@ -21,6 +21,7 @@ import json
 url = 'http://127.0.0.1:5000/search_text'
 data = {
     "all_text": "genera un quiz a crocette come test di ingresso di prima superiore.",
+    "merge": True
     }
 response = requests.get(url, params=data)
 

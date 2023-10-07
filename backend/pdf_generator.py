@@ -1,6 +1,7 @@
 from reportlab.lib.pagesizes import letter
 from reportlab.platypus import SimpleDocTemplate, Paragraph
 from reportlab.lib.styles import getSampleStyleSheet
+from PyPDF2 import PdfMerger
 import os
 
 
@@ -25,19 +26,22 @@ class pdfGenerator(object):
             story.append(paragraph)
         
         doc.build(story)
-
+        print("Pdf generated %s" % (self.pdf_path))
         return self.pdf_path
 
     def pdf_merge(self, pdf_to_merge):
-        pdf_merger = PyPDF2.PdfFileMerger()
-        for pdf_file in pdf_to_merge:
-            pdf_merger.append(pdf_file)
-
-        # Specify the output file where the merged PDF will be saved
+        pdf_merger = PdfMerger()
         output_pdf = os.path.join(self.pdf_folder, 'merged.pdf')
-    
-        # Write the merged PDF to the output file
-        pdf_merger.write(output_pdf)
+        try:
+            for pdf_file in pdf_to_merge:
+                pdf_merger.append(pdf_file)
+            with open(output_pdf, 'wb') as output_file:
+                pdf_merger.write(output_file)
+        except Exception as e:
+            print(f'Error: {str(e)}')
+        finally:
+            pdf_merger.close()
+        print("Pdf generated %s" % (output_pdf))
         return output_pdf
 
     
