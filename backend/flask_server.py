@@ -56,6 +56,24 @@ def get_students():
             })
     return jsonify({'result': out})
 
+@app.route('/get_file_generati', methods=['GET'])
+def get_file_generati():
+    SESSION_ID = login_chat_gpt()
+    file_id = request.args.get('file_id')
+    if file_id:
+        alunni = DB_MANAGER.getFileGeneratiById(file_id)
+    else:
+        alunni = DB_MANAGER.getFileGenerati()
+    out = []
+    for file_obj in alunni:
+        out.append({
+            'name': file_obj.name,
+            'id': file_obj.id,
+            'id_studente': file_obj.id_studente,
+            'prompt': file_obj.prompt
+            })
+    return jsonify({'result': out})
+
 @app.route('/search_text', methods=['GET'])
 def search_text():
     all_text = request.args.get('all_text')
@@ -77,11 +95,18 @@ def search_text():
     
     all_pdf = []
     for alunno in alunni:
-        result = submitChatGPT(SESSION_ID, all_text + alunno.additional_req)
+        query_res = all_text + alunno.additional_req
+        result = submitChatGPT(SESSION_ID, query_res)
         
         content = "%s\n\n" % (alunno.name.capitalize()) + result
         new_pdf = pdfGenerator('%s.pdf' % (alunno.name), content)
-        all_pdf.append(new_pdf.generate_pdf())
+        file_path = new_pdf.generate_pdf()
+        DB_MANAGER.addFileGenerati({
+            'name': file_path,
+            'id_studente': alunno.id,
+            'prompt': query_res
+            })
+        all_pdf.append(file_path)
         
     out_pdf = ''
     if len(all_pdf) > 1:

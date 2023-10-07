@@ -62,6 +62,30 @@ class DbManager(object):
         self.closeSession()
         return ret
 
+    def addFileGenerati(self, vals):
+        self.openSession()
+        try:
+            record1 = FileGenerati(**vals)
+            self.session.add(record1)
+            self.session.commit()
+        except Exception as ex:
+            raise Exception("Cannot create File Object due to error %r" % (ex))
+        finally:
+            self.closeSession()
+        return True
+        
+    def getFileGeneratiById(self, id_alunno):
+        self.openSession()
+        ret = self.session.query(FileGenerati).filter(FileGenerati.id == id_alunno).all()
+        self.closeSession()
+        return ret
+        
+    def getFileGenerati(self):
+        self.openSession()
+        ret = self.session.query(FileGenerati).all()
+        self.closeSession()
+        return ret
+
 # # Example 1: Query all rows
 # all_rows = session.query(MyTable).all()
 #
