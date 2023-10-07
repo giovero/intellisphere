@@ -13,6 +13,14 @@ class Alunni(Base):
     additional_req = Column(String)
 
 
+class FileGenerati(Base):
+    __tablename__ = 'generated_files'
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    id_studente = Column(Integer)
+    prompt = Column(String)
+
+
 class DbManager(object):
     
     def __init__(self):
@@ -44,7 +52,7 @@ class DbManager(object):
         
     def getAunnoById(self, id_alunno):
         self.openSession()
-        ret = self.session.query(Alunni).filter(MyTable.id >= id_alunno).all()
+        ret = self.session.query(Alunni).filter(Alunni.id == id_alunno).all()
         self.closeSession()
         return ret
         

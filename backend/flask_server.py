@@ -38,8 +38,62 @@ def is_alive():
     response = {'result': SESSION_ID}
     return jsonify(response)
 
+@app.route('/get_students', methods=['GET'])
+def get_students():
+    SESSION_ID = login_chat_gpt()
+    alunno_id = request.args.get('alunno_id')
+    if alunno_id:
+        alunni = DB_MANAGER.getAunnoById(alunno_id)
+    else:
+        alunni = DB_MANAGER.getAlunni()
+    out = []
+    for alunno in alunni:
+        out.append({
+            'name': alunno.name,
+            'id': alunno.id,
+            'age': alunno.age,
+            'additional_req': alunno.additional_req
+            })
+    return jsonify({'result': out})
+
 @app.route('/search_text', methods=['GET'])
 def search_text():
+    all_text = request.args.get('all_text')
+    alunno_id = request.args.get('alunno_id')
+    if not all_text:
+        return jsonify({'error': 'Missing parameters'}), 400
+    SESSION_ID = login_chat_gpt()
+    
+    out = {}
+    
+    try:
+        alunno_id = eval(alunno_id)
+    except Exception as ex:
+        print(ex)
+    if alunno_id:
+        alunni = DB_MANAGER.getAunnoById(alunno_id)
+    else:
+        alunni = DB_MANAGER.getAlunni()
+    
+    all_pdf = []
+    for alunno in alunni:
+        result = submitChatGPT(SESSION_ID, all_text + alunno.additional_req)
+        
+        content = "%s\n\n" % (alunno.name.capitalize()) + result
+        new_pdf = pdfGenerator('%s.pdf' % (alunno.name), content)
+        all_pdf.append(new_pdf.generate_pdf())
+        
+    out_pdf = ''
+    if len(all_pdf) > 1:
+        new_pdf = pdfGenerator('merged.pdf', "")
+        out_pdf = new_pdf.pdf_merge(all_pdf)
+    elif len(all_pdf) == 1:
+        out_pdf = all_pdf[0]
+    return send_file(out_pdf, as_attachment=True)
+
+
+@app.route('/search_text_dvanced', methods=['GET'])
+def search_text_dvanced():
     all_text = request.args.get('all_text')
     alunno_id = request.args.get('alunno_id')
     merge = request.args.get('merge')
