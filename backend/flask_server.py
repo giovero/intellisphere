@@ -4,12 +4,12 @@ Created on Aug 21, 2023
 @author: daniel
 '''
 from flask import Flask, request, jsonify
-from bs4 import BeautifulSoup
 from db_manager import DbManager
 from pdf_generator import pdfGenerator
 import requests
 import os
 import json
+from flask_cors import CORS
 
 SECRET = ''
 
@@ -23,6 +23,8 @@ with open(secret_file) as config_file:
 
 
 app = Flask(__name__)
+CORS(app)
+
 
 DB_MANAGER = DbManager()
 #DB_MANAGER.addAlunno({'name': 'Giorgio', 'age': 30, 'additional_req': ' con solo moltiplicazioni'})
