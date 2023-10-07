@@ -3,7 +3,7 @@ Created on Aug 21, 2023
 
 @author: daniel
 '''
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 from db_manager import DbManager
 from pdf_generator import pdfGenerator
 import requests
@@ -27,8 +27,8 @@ CORS(app)
 
 
 DB_MANAGER = DbManager()
-#DB_MANAGER.addAlunno({'name': 'Giorgio', 'age': 30, 'additional_req': ' con solo moltiplicazioni'})
-#DB_MANAGER.addAlunno({'name': 'Luca', 'age': 20, 'additional_req': ' con solo addizioni'})
+# DB_MANAGER.addAlunno({'name': 'Giorgio', 'age': 30, 'additional_req': ' con solo moltiplicazioni'})
+# DB_MANAGER.addAlunno({'name': 'Luca', 'age': 20, 'additional_req': ' con solo addizioni'})
 
 
 # Define a route that returns some values
@@ -55,7 +55,14 @@ def search_text():
         out[alunno.id]['txt_res'] = "%s\n\n" % (alunno.name.capitalize()) + result
         new_pdf = pdfGenerator('%s.pdf' % (alunno.name), out[alunno.id]['txt_res'])
         out[alunno.id]['pdf_res'] = new_pdf.generate_pdf()
-    return jsonify({'result': result})
+    return jsonify({'result': out})
+
+@app.route('/download')
+def download_file():
+    # Specifica il percorso del file che vuoi far scaricare agli utenti
+    file_path = 'pdf_result/Luca.pdf'
+    # Restituisci il file al browser come download
+    return send_file(file_path, as_attachment=True)
 
 @app.route('/search_text_single', methods=['GET'])
 def search_text_single():
