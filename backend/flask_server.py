@@ -5,11 +5,9 @@ Created on Aug 21, 2023
 '''
 from flask import Flask, request, jsonify
 from bs4 import BeautifulSoup
-from selenium import webdriver
-from selenium.webdriver.common.by import By
+from db_manager import DbManager
+from pdf_generator import pdfGenerator
 import requests
-import time
-import re
 import os
 import json
 
@@ -26,6 +24,11 @@ with open(secret_file) as config_file:
 
 app = Flask(__name__)
 
+DB_MANAGER = DbManager()
+#DB_MANAGER.addAlunno({'name': 'Giorgio', 'age': 30, 'additional_req': ' con solo moltiplicazioni'})
+#DB_MANAGER.addAlunno({'name': 'Luca', 'age': 20, 'additional_req': ' con solo addizioni'})
+
+
 # Define a route that returns some values
 @app.route('/is_alive')
 def is_alive():
@@ -39,8 +42,41 @@ def search_text():
     if not all_text:
         return jsonify({'error': 'Missing parameters'}), 400
     SESSION_ID = login_chat_gpt()
-    result = submitChatGPT(SESSION_ID, all_text)
+    
+    out = {}
+    
+    alunni = DB_MANAGER.getAlunni()
+    for alunno in alunni:
+        result = submitChatGPT(SESSION_ID, all_text + alunno.additional_req)
+        
+        out.setdefault(alunno.id, {})
+        out[alunno.id]['txt_res'] = "%s\n\n" % (alunno.name.capitalize()) + result
+        new_pdf = pdfGenerator('%s.pdf' % (alunno.name), out[alunno.id]['txt_res'])
+        out[alunno.id]['pdf_res'] = new_pdf.generate_pdf()
     return jsonify({'result': result})
+
+@app.route('/search_text_single', methods=['GET'])
+def search_text_single():
+    all_text = request.args.get('all_text')
+    alunno_id = request.args.get('alunno_id')
+    if not all_text or not alunno_id:
+        return jsonify({'error': 'Missing parameters'}), 400
+    alunno_id = int(alunno_id)
+    SESSION_ID = login_chat_gpt()
+    
+    out = {}
+    
+    alunni = DB_MANAGER.getAunnoById(alunno_id)
+    for alunno in alunni:
+        result = submitChatGPT(SESSION_ID, all_text + alunno.additional_req)
+        
+        out.setdefault(alunno.id, {})
+        out[alunno.id]['txt_res'] = "%s\n\n" % (alunno.name.capitalize()) + result
+        new_pdf = pdfGenerator('%s.pdf' % (alunno.name), out[alunno.id]['txt_res'])
+        out[alunno.id]['pdf_res'] = new_pdf.generate_pdf()
+    return jsonify({'result': result})
+
+
 
 def login_chat_gpt():
     url = 'https://backend.memori.ai/memori/v2/session'

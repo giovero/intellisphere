@@ -20,7 +20,7 @@ import json
 
 url = 'http://127.0.0.1:5000/search_text'
 data = {
-    "all_text": "Chi ha vinto il campionato di Serie A l'hanno scorso?",
+    "all_text": "genera un quiz a crocette come test di ingresso di prima superiore.",
     }
 response = requests.get(url, params=data)
 
