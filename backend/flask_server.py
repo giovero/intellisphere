@@ -42,10 +42,17 @@ def is_alive():
 def get_students():
     SESSION_ID = login_chat_gpt()
     alunno_id = request.args.get('alunno_id')
-    if alunno_id:
-        alunni = DB_MANAGER.getAunnoById(alunno_id)
-    else:
-        alunni = DB_MANAGER.getAlunni()
+    try:
+        if alunno_id:
+            alunni = DB_MANAGER.getAunnoById(alunno_id)
+        else:
+            alunni = DB_MANAGER.getAlunni()
+    except Exception as ex:
+        print(ex)
+        if alunno_id:
+            alunni = DB_MANAGER.getAunnoById(alunno_id)
+        else:
+            alunni = DB_MANAGER.getAlunni()
     out = []
     for alunno in alunni:
         out.append({
