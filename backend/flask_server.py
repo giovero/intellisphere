@@ -74,6 +74,22 @@ def get_file_generati():
             })
     return jsonify({'result': out})
 
+@app.route('/create_alunno', methods=['GET'])
+def create_alunno():
+    SESSION_ID = login_chat_gpt()
+    vals_to_update = request.args.get('to_create')
+    if vals_to_update:
+        vals_to_update = json.loads(vals_to_update)
+        
+        name = vals_to_update.get('name', '')
+        age = vals_to_update.get('eta', '')
+        
+        if not name or not age:
+            raise Exception('Cannot create Alunno, name or age missing')
+        
+        DB_MANAGER.addAlunno(vals_to_update)
+    return jsonify({'result': True})
+
 @app.route('/update_alunno', methods=['GET'])
 def update_alunno():
     SESSION_ID = login_chat_gpt()

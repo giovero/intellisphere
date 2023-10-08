@@ -11,6 +11,7 @@ class Alunni(Base):
     name = Column(String)
     age = Column(Integer)
     additional_req = Column(String)
+    image_url = Column(String)
 
 
 class FileGenerati(Base):
@@ -41,6 +42,9 @@ class DbManager(object):
     def addAlunno(self, vals):
         self.openSession()
         try:
+            for kkk, vvv in vals.copy().items():
+                if not hasattr(Alunni, kkk):
+                    del vals[kkk]
             record1 = Alunni(**vals)
             self.session.add(record1)
             self.session.commit()
@@ -102,7 +106,7 @@ class DbManager(object):
                     alunno.additional_req = val
         self.session.commit()
         self.closeSession()
-        
+
 # # Example 1: Query all rows
 # all_rows = session.query(MyTable).all()
 #
