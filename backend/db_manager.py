@@ -52,10 +52,13 @@ class DbManager(object):
         
     def getAunnoById(self, id_alunno):
         self.openSession()
-        ret = self.session.query(Alunni).filter(Alunni.id == id_alunno).all()
+        ret = self._getAlunnoId(id_alunno)
         self.closeSession()
         return ret
         
+    def _getAlunnoId(self, id_alunno):
+        return  self.session.query(Alunni).filter(Alunni.id == id_alunno).all()
+
     def getAlunni(self):
         self.openSession()
         ret = self.session.query(Alunni).all()
@@ -86,6 +89,20 @@ class DbManager(object):
         self.closeSession()
         return ret
 
+    def updateAlunno(self, alunno_id, vals):
+        self.openSession()
+        alunni = self._getAlunnoId(alunno_id)
+        for alunno in alunni:
+            for key, val in vals.items():
+                if key == 'name':
+                    alunno.name = val
+                elif key == 'age':
+                    alunno.age = val
+                elif key == 'additional_req':
+                    alunno.additional_req = val
+        self.session.commit()
+        self.closeSession()
+        
 # # Example 1: Query all rows
 # all_rows = session.query(MyTable).all()
 #

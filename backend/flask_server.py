@@ -74,6 +74,20 @@ def get_file_generati():
             })
     return jsonify({'result': out})
 
+@app.route('/update_alunno', methods=['GET'])
+def update_alunno():
+    SESSION_ID = login_chat_gpt()
+    alunno_id = request.args.get('alunno_id')
+    vals_to_update = request.args.get('to_update')
+    if vals_to_update and alunno_id:
+        vals_to_update = json.loads(vals_to_update)
+        try:
+            alunno_id = eval(alunno_id)
+        except Exception as ex:
+            print(ex)
+        DB_MANAGER.updateAlunno(alunno_id, vals_to_update)
+    return jsonify({'result': True})
+
 @app.route('/search_text', methods=['GET'])
 def search_text():
     all_text = request.args.get('all_text')

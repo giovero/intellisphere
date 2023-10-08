@@ -46,9 +46,27 @@ import json
 
 
 
-url = 'http://127.0.0.1:5000/get_file_generati'
+# url = 'http://127.0.0.1:5000/get_file_generati'
+# data = {
+#     "alunno_id": 1
+#     }
+# response = requests.get(url, params=data)
+#
+# if response.status_code == 200:
+#     values = response.json()
+#     print("Received values:", values.get('result'))
+# else:
+#     print("Error:", response.status_code)
+    
+    
+    
+url = 'http://127.0.0.1:5000/update_alunno'
 data = {
-    "alunno_id": 1
+    "alunno_id": 1,
+    "to_update": json.dumps({
+        "additional_req": "Chi ha vinto la serie A nel 2022?",
+        "fake_attrib": "test fake"
+        })
     }
 response = requests.get(url, params=data)
 
