@@ -5,19 +5,19 @@ const Classe = () => {
   const [students, setStudents] = useState([]);
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const fetchList = async () => {
-    const endpoint = "http://127.0.0.1:5000/get_students";
-    const response = await fetch(endpoint);
-    const data = await response.json();
-    setStudents(
-      data.result.map((s: any) => {
-        s.average = (Math.random() * (10 - 5) + 5).toFixed(1);
-        return s;
-      })
-    );
-  };
 
   useEffect(() => {
+    const fetchList = async () => {
+      const endpoint = "http://127.0.0.1:5000/get_students";
+      const response = await fetch(endpoint);
+      const data = await response.json();
+      setStudents(
+        data.result.map((s: any) => {
+          s.average = (Math.random() * (10 - 5) + 5).toFixed(1);
+          return s;
+        })
+      );
+    };
     fetchList();
   }, []);
 
