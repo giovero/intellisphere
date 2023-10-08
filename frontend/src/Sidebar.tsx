@@ -7,7 +7,6 @@ const Sidebar = () => {
   return (
     <div className="bg-black text-white fixed left-0 top-0 w-[309px] h-screen">
       <div className="flex flex-col p-6">
-        <div className="text-lg font-bold">Bentornata, Giulia</div>
         <div className="mt-28 flex flex-col gap-3">
           <div
             className="p-4 rounded-lg"
