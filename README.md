@@ -1,5 +1,6 @@
 # Do gifted students get a fair education?
 
+![alt text](https://github.com/giovero/intellisphere/blob/TeacHero.jpg?raw=true)
 
 # Progetto H-ACK Teachero
 Questo progetto è stato realizzato dal team "Oh my Group" durante l'H-ACK del 7-8 Ottobre 2023 presso H-Farm, Roncade.
