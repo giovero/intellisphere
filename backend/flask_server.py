@@ -52,7 +52,8 @@ def get_students():
             'name': alunno.name,
             'id': alunno.id,
             'age': alunno.age,
-            'additional_req': alunno.additional_req
+            'additional_req': alunno.additional_req,
+            'image_url': alunno.image_url
             })
     return jsonify({'result': out})
 
