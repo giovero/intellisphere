@@ -91,18 +91,19 @@ def create_alunno():
         DB_MANAGER.addAlunno(vals_to_update)
     return jsonify({'result': True})
 
-@app.route('/update_alunno', methods=['GET'])
+@app.route('/update_alunno', methods=['POST'])
 def update_alunno():
     SESSION_ID = login_chat_gpt()
-    alunno_id = request.args.get('alunno_id')
-    vals_to_update = request.args.get('to_update')
-    if vals_to_update and alunno_id:
-        vals_to_update = json.loads(vals_to_update)
+    data = request.get_json()
+    alunno_id = data.get('alunno_id')
+    additional_req = data.get('additional_req')
+    if additional_req and alunno_id:
+        
         try:
             alunno_id = eval(alunno_id)
         except Exception as ex:
             print(ex)
-        DB_MANAGER.updateAlunno(alunno_id, vals_to_update)
+        DB_MANAGER.updateAlunno(alunno_id, {"additional_req" :additional_req})
     return jsonify({'result': True})
 
 @app.route('/search_text', methods=['GET'])
