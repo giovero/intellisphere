@@ -27,11 +27,7 @@ CORS(app)
 
 
 DB_MANAGER = DbManager()
-#DB_MANAGER.addAlunno({'name': 'Giorgio', 'age': 30, 'additional_req': ' con solo moltiplicazioni'})
-#DB_MANAGER.addAlunno({'name': 'Luca', 'age': 20, 'additional_req': ' con solo addizioni'})
 
-
-# Define a route that returns some values
 @app.route('/is_alive')
 def is_alive():
     SESSION_ID = login_chat_gpt()

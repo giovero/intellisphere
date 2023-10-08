@@ -1,12 +1,14 @@
 from sqlalchemy import create_engine, Column, Integer, String
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
+from test_data import alunni
 import os
 
 Base = declarative_base()
 
+
 class Alunni(Base):
-    __tablename__ = 'alunni'
+    __tablename__ = "alunni"
     id = Column(Integer, primary_key=True)
     name = Column(String)
     age = Column(Integer)
@@ -15,7 +17,7 @@ class Alunni(Base):
 
 
 class FileGenerati(Base):
-    __tablename__ = 'generated_files'
+    __tablename__ = "generated_files"
     id = Column(Integer, primary_key=True)
     name = Column(String)
     id_studente = Column(Integer)
@@ -23,14 +25,17 @@ class FileGenerati(Base):
 
 
 class DbManager(object):
-    
     def __init__(self):
         self.session = None
         backend_dir = os.getcwd()
-        full_db_path = os.path.join(backend_dir, 'database.db')
-        engine = create_engine('sqlite:///' + full_db_path)
+        full_db_path = os.path.join(backend_dir, "database.db")
+        engine = create_engine("sqlite:///" + full_db_path)
         self.s_maker = sessionmaker(bind=engine)
+        self.openSession()
+        Base.metadata.drop_all(self.session.bind)
         Base.metadata.create_all(engine)
+        self.populate_data()
+        self.session.commit()
 
     def openSession(self):
         self.session = self.s_maker()
@@ -38,7 +43,7 @@ class DbManager(object):
     def closeSession(self):
         # Close the session
         self.session.close()
-    
+
     def addAlunno(self, vals):
         self.openSession()
         try:
@@ -53,15 +58,15 @@ class DbManager(object):
         finally:
             self.closeSession()
         return True
-        
+
     def getAunnoById(self, id_alunno):
         self.openSession()
         ret = self._getAlunnoId(id_alunno)
         self.closeSession()
         return ret
-        
+
     def _getAlunnoId(self, id_alunno):
-        return  self.session.query(Alunni).filter(Alunni.id == id_alunno).all()
+        return self.session.query(Alunni).filter(Alunni.id == id_alunno).all()
 
     def getAlunni(self):
         self.openSession()
@@ -80,13 +85,15 @@ class DbManager(object):
         finally:
             self.closeSession()
         return True
-        
+
     def getFileGeneratiById(self, id_alunno):
         self.openSession()
-        ret = self.session.query(FileGenerati).filter(FileGenerati.id == id_alunno).all()
+        ret = (
+            self.session.query(FileGenerati).filter(FileGenerati.id == id_alunno).all()
+        )
         self.closeSession()
         return ret
-        
+
     def getFileGenerati(self):
         self.openSession()
         ret = self.session.query(FileGenerati).all()
@@ -98,14 +105,23 @@ class DbManager(object):
         alunni = self._getAlunnoId(alunno_id)
         for alunno in alunni:
             for key, val in vals.items():
-                if key == 'name':
+                if key == "name":
                     alunno.name = val
-                elif key == 'age':
+                elif key == "age":
                     alunno.age = val
-                elif key == 'additional_req':
+                elif key == "additional_req":
                     alunno.additional_req = val
         self.session.commit()
         self.closeSession()
+
+    def populate_data(self):
+        for name, age, ext, image in alunni:
+            self.addAlunno(
+                {"additional_req": ext, "name": name, "eta": age, "image_url": image}
+            )
+
+            print("Created %s" % (name))
+
 
 # # Example 1: Query all rows
 # all_rows = session.query(MyTable).all()
@@ -118,9 +134,3 @@ class DbManager(object):
 #
 # # Example 4: Filter and order
 # filtered_and_ordered = session.query(MyTable).filter(MyTable.age >= 18).order_by(MyTable.name).all()
-
-
-
-
-
-
