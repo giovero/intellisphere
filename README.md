@@ -1,8 +1,10 @@
 # Progetto H-ACK Teachero
-Questo progetto è diviso in due parti: il frontend e il backend. Segui le istruzioni seguenti per avviare ciascuna parte del progetto.
+Questo progetto è stato realizzato dal team "Oh my Group" durante l'H-ACK del 7-8 Ottobre 2023.
+
+Il progetto diviso in due parti: il frontend e il backend. Segui le istruzioni seguenti per avviare ciascuna parte del progetto.
 
 
-## Backend
+## Backend
 E' stato utilizzato `python 3.11 e consigliamo di usare la stessa versione
 
 Naviga nella cartella backend del progetto:
