@@ -1,5 +1,8 @@
+# Do gifted students get a fair education?
+
+
 # Progetto H-ACK Teachero
-Questo progetto è stato realizzato dal team "Oh my Group" durante l'H-ACK del 7-8 Ottobre 2023.
+Questo progetto è stato realizzato dal team "Oh my Group" durante l'H-ACK del 7-8 Ottobre 2023 presso H-Farm, Roncade.
 
 Il progetto diviso in due parti: il frontend e il backend. Segui le istruzioni seguenti per avviare ciascuna parte del progetto.
 
